@@ -1,7 +1,7 @@
 import asyncio
 
 from decimal import Decimal
-from parsers.base import BaseParser, Offer, Seller
+from parsers.base import BaseParser, Offer, Seller, tag_strip
 
 class Parser(BaseParser):
     _DOMAIN = 'https://mtgsale.ru'
@@ -14,10 +14,10 @@ class Parser(BaseParser):
         for row in table.select('.ctclass'):
             result.append(
                 {
-                    'card_name': row.select_one('a.tnamec').text,
-                    'language': row.select_one('.lang i').attrs['title'],
-                    'is_foil': row.select_one('.foil').text == 'Фойл',
-                    'condition': row.select_one('.sost span').text,
+                    'card_name': tag_strip(row.select_one('a.tnamec')),
+                    'language': row.select_one('.lang i').attrs['title'].lower(),
+                    'is_foil': tag_strip(row.select_one('.foil')) == 'Фойл',
+                    'condition': tag_strip(row.select_one('.sost span')),
                     'link': self._get_full_url(row.select_one('a.tnamec').attrs['href']),
                     'price': Decimal(row.select_one('.pprice').text.split()[0]),
                     'amount': int(row.select_one('.colvo').text.split()[0])
@@ -26,7 +26,10 @@ class Parser(BaseParser):
         return result
 
     async def _parse_card_offers(self, card):
-        seller = Seller('MTGSale', self._DOMAIN)
+        seller = Seller(
+            name='MTGSale', 
+            link=self._DOMAIN
+        )
         page = await self._get_offers_page(card)
         return [
             Offer(

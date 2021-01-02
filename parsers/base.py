@@ -5,19 +5,34 @@ import aiohttp
 import json
 from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote_plus
+from pprint import pformat
+
+def tag_strip(tag):
+    """
+    :param tag: HTML tag to get clean text from
+    :type tag: bs4.Tag
+    :return: clean text from tag
+    :rtype: str
+    """
+    return tag.text.strip()
 
 
 class Seller():
-    def __init__(self, name, link):
+    def __init__(self, name, link, source=None):
         self.name = name
         self.link = link
+        self.source = source
 
+    def __repr__(self):
+        return pformat(self.__dict__)
+ 
     def to_json(self):
         return json.dumps(
             dict(
                 name=self.name,
-                link=self.link
+                link=self.link,
+                source=self.source
             )
         )
 
@@ -42,6 +57,7 @@ class Offer():
         self.link = link
         self.price = price
         self.currency_code = currency_code
+        self.amount = amount
         self.seller = seller
 
     def to_json(self):
@@ -54,9 +70,11 @@ class Offer():
                 link=self.link,
                 price=self.price,
                 currency_code=self.currency_code,
+                amount=self.amount,
                 seller={
                     'name': self.seller.name,
-                    'link': self.seller.link
+                    'link': self.seller.link,
+                    'source': self.seller.source
                 }
             ),
             default=str
@@ -97,8 +115,9 @@ class BaseParser(ABC):
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 self._get_full_url(
-                    self._SEARCH.format(search)  # pylint: disable=no-member
-                    )
+                    self._SEARCH.format(quote_plus(search))  # pylint: disable=no-member
+                ),
+                raise_for_status=True
             ) as response:
                 html = await response.text()
         return self._to_soup(html)
@@ -121,8 +140,8 @@ class BaseParser(ABC):
         :return: offers from given source
         :rtype: list
         """
-        result = []
+        result = {}
         for card in cards:
             offers = await self._parse_card_offers(card)
-            result += offers
+            result[card] = offers
         return result
