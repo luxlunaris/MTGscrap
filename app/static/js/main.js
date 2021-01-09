@@ -1,14 +1,9 @@
 var search = new Vue({
     el: "#search-result",
     data: {
-        isLoading: true,
+        isLoading: false,
         searchResult: "",
         isEmptyDisabled: false
-    },
-    computed: {
-        isLoading() {
-            return this.isLoading;
-        }
     },
     delimiters: ["${", "}$"]
 })
