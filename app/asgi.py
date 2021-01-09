@@ -40,7 +40,7 @@ async def home(request: Request):
 
 @app.post("/search/", response_class=HTMLResponse)
 async def search(cards: str = Form(...)):
-    offers = await asyncio.run(parse_offers(cards.split('\n'), config.PARSERS))
+    offers = await parse_offers(cards.split('\n'), config.PARSERS)
     return app.templates.TemplateResponse(
         "reports/search.html", {"offers": offers}
     )
