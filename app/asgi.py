@@ -39,8 +39,8 @@ async def home(request: Request):
 
 
 @app.post("/search/", response_class=HTMLResponse)
-async def search(cards: str = Form(...)):
+async def search(request: Request, cards: str = Form(...)):
     offers = await parse_offers(cards.split('\n'), config.PARSERS)
     return app.templates.TemplateResponse(
-        "reports/search.html", {"offers": offers}
+        "reports/search.html", {"request": request, "offers": offers}
     )

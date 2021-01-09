@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from pprint import pformat
 from urllib.parse import quote_plus, urljoin
 
-from aiohttp_retry import RetryClient
+from aiohttp_retry import RetryClient, ExponentialRetry
 from bs4 import BeautifulSoup
 
 
@@ -173,7 +173,7 @@ class BaseParser(ABC):
         """
         url = self._get_full_url(query)
         print(f"GET request: {url}")
-        async with RetryClient() as client:
+        async with RetryClient(retry_options=ExponentialRetry) as client:
             async with client.get(url) as response:
                 html = await response.text()
         return self._to_soup(html)
