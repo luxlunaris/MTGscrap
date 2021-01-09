@@ -34,16 +34,9 @@
                 text-align: left;
             }
         </style>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     </head>
     <body>
         <main>
-        <input 
-          type="checkbox" 
-          id="hideEmpty"
-          @change="handleEmpty"
-        >
-        <label for="hideEmpty">Hide offers with no cards available</label>
             {% for card, card_offers in offers.items() %}
                 <table class="offers">
                     <caption>{{ card }}</caption>
@@ -75,23 +68,6 @@
             {% endfor %}
         </main>
         <footer>
-            <script>
-                isEmptyDisabled = false;
-
-                var hideEmpty = new Vue({
-                    el: '#hideEmpty',
-                    data: {
-                        toggle: '',
-                    },
-                    methods: {
-                        handleEmpty: function (event) {
-                            if (this.toggle) {
-                                isEmptyDisabled = !isEmptyDisabled
-                            }
-                        }
-                    }
-                });
-            </script>
         </footer>
     </body>
 </html>
