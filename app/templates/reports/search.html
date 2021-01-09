@@ -1,0 +1,29 @@
+{% for card, card_offers in offers.items() %}
+    <table class="offers">
+        <caption>{{ card }}</caption>
+        <thead>
+            <th>Card name</th>
+            <th>Language</th>
+            <th>Foil</th>
+            <th>Condition</th>
+            <th>Price</th>
+            <th>Currency</th>
+            <th>Amount</th>
+            <th>Seller</th>
+        </thead>
+        <tbody>
+        {% for offer in card_offers %}
+            <tr {% if offer.amount == 0 %} v-bind:disabled="isEmptyDisabled" {% endif %} class="offer">
+                <td><a href="{{ offer.link }}">{{ offer.card_name }}</a></td>
+                <td>{{ offer.language }}</td>
+                <td>{{ offer.is_foil }}</td>
+                <td>{{ offer.condition }}</td>
+                <td>{{ offer.price }}</td>
+                <td>{{ offer.currency_code }}</td>
+                <td>{{ offer.amount }}</td>
+                <td><a href="{{ offer.seller.link }}">{{ offer.seller.name }}</a>{% if offer.seller.source %} ({{ offer.seller.source }}){% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endfor %}

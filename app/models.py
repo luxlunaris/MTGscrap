@@ -1,5 +1,3 @@
-"""Abstract models for parsing"""
-
 import asyncio
 import importlib
 import json
@@ -10,21 +8,6 @@ from urllib.parse import quote_plus, urljoin
 
 from aiohttp_retry import RetryClient
 from bs4 import BeautifulSoup
-
-PARSERS = ["mtgsale", "mtgtrade", "angrybottlegnome"]
-
-
-CARDS_PATH = "cards.txt"
-
-
-def get_static(relpath):
-    """
-    :param relpath: relative link
-    :type relpath: str
-    :return: absolute static path
-    :rtype: str
-    """
-    return os.path.join(os.path.dirname(__file__), "static", relpath)
 
 
 def tag_strip(tag):
@@ -53,15 +36,36 @@ def merge_list_dictionaries(*ds):
     return ds[0]
 
 
-def get_tasks_from_parsers():
-    with open(get_static(CARDS_PATH), "r") as file:
-        cards = file.read().splitlines()
-
+def _get_coroutines_from_parsers(cards, parsers):
+    """
+    :param cards: names of cards to search for
+    :type cards: list
+    :return: coroutines for offers from given parsers
+    :rtype: list
+    """
     coroutines = []
-    for parser in PARSERS:
+    for parser in parsers:
         parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser()
         coroutines += [parser.parse_card_offers(card) for card in cards]
     return coroutines
+
+
+async def parse_offers(cards, parsers):
+    """
+    :param cards: names of cards to search for
+    :type cards: list
+    :param parsers: names of parsers to search from
+    :type parsers: list
+    :return: available offers
+    :rtype: dict
+    """
+    offers = await asyncio.gather(*_get_coroutines_from_parsers(cards, parsers))
+    result = merge_list_dictionaries(*offers)
+
+    for card in result:
+        result[card].sort(key=lambda x: x.price)
+
+    return result
 
 
 class Seller:

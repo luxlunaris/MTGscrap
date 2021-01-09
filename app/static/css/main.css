@@ -1,0 +1,32 @@
+.offers {
+    width: 1300px;
+    margin: 0 auto 40px;
+    font-size: 21px;
+    border-collapse: collapse;
+    background: #efffe6;
+    font-family: Arial;
+}
+a {
+    color: #0f2f05;
+    font-weight: 600;
+    text-decoration: none;
+}
+a:hover {
+    color:#3d6d50
+}
+.offers td {
+    padding: 9px;
+    min-width: 80px;
+}
+.offers tr:nth-child(even) {
+    background: #e5e6da;
+}
+.offers th {
+    background: #e5e6da;
+    color: #5f5f5f;
+    padding: 12px;
+    text-align: left;
+}
+caption {
+    text-align: left;
+}
