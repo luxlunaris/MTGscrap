@@ -5,7 +5,5 @@
     <p><textarea ref="cards" name="cards"></textarea></p>
     <button @click.prevent="getSearch()">Search cards</button>
 </form>
-<div id="search-result">
-    ${ searchResult }$
-</div>
+<div id="search-result" v-html="searchResult"></div>
 {% endblock %}

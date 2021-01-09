@@ -14,7 +14,7 @@ var form = new Vue({
             const cards = this.$refs.cards.value;
             const response = axios
                 .post("/search", cards.split(/\r?\n/))
-                .then(response => (search.searchResult = response));
+                .then(response => (search.searchResult = response.data));
         }
     }
 })
