@@ -11,7 +11,7 @@ class Parser(BaseParser):
 
     CURRENCY_CODE = "RUB"
 
-    def parse_vertical_table(self, table):
+    def __parse_vertical_table(self, table):
         result = []
         name = tag_strip(table.select_one("a.catalog-title"))
         for row in table.select(".search-card tbody tr"):
@@ -43,6 +43,6 @@ class Parser(BaseParser):
         result = []
         page = await self._get_offers_page(card)
         for table in page.select(".search-item"):
-            for row in self.parse_vertical_table(table):
+            for row in self.__parse_vertical_table(table):
                 result.append(Offer(**row, currency_code=self.CURRENCY_CODE))
         return {card: result}

@@ -8,10 +8,10 @@ from abc import ABC, abstractmethod
 from pprint import pformat
 from urllib.parse import quote_plus, urljoin
 
-import aiohttp
+from aiohttp_retry import RetryClient
 from bs4 import BeautifulSoup
 
-PARSERS = ["mtgsale", "mtgtrade"]
+PARSERS = ["mtgsale", "mtgtrade", "angrybottlegnome"]
 
 
 CARDS_PATH = "cards.txt"
@@ -160,6 +160,20 @@ class BaseParser(ABC):
         """
         return urljoin(self._DOMAIN, url)
 
+    async def _get_page(self, query):
+        """
+        :param query: relative link for given website
+        :type search: str
+        :return: page with result of GET request
+        :rtype: BeautifulSoup
+        """
+        url = self._get_full_url(query)
+        print(f"GET request: {url}")
+        async with RetryClient() as client:
+            async with client.get(url) as response:
+                html = await response.text()
+        return self._to_soup(html)
+
     async def _get_offers_page(self, search):
         """
         :param search: card to search on given website
@@ -167,16 +181,7 @@ class BaseParser(ABC):
         :return: search page with results
         :rtype: BeautifulSoup
         """
-        print(f"Gathering offers from {self._DOMAIN} for '{search}'")
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                self._get_full_url(
-                    self._SEARCH.format(quote_plus(search))  # pylint: disable=no-member
-                ),
-                raise_for_status=True,
-            ) as response:
-                html = await response.text()
-        return self._to_soup(html)
+        return await self._get_page(self._SEARCH.format(quote_plus(search)))  # pylint: disable=no-member
 
     @abstractmethod
     async def parse_card_offers(self, card):

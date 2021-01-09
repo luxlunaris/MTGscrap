@@ -10,7 +10,7 @@ class Parser(BaseParser):
 
     CURRENCY_CODE = "RUB"
 
-    def parse_vertical_table(self, table):
+    def __parse_vertical_table(self, table):
         result = []
         for row in table.select(".ctclass"):
             result.append(
@@ -34,6 +34,6 @@ class Parser(BaseParser):
         return {
             card: [
                 Offer(**row, currency_code=self.CURRENCY_CODE, seller=seller)
-                for row in self.parse_vertical_table(page.select_one("#taba"))
+                for row in self.__parse_vertical_table(page.select_one("#taba"))
             ]
         }
