@@ -48,7 +48,7 @@ var form = new Vue({
                     }
                 )
                 .then(response => (search.searchResult = response.data));
-            this.isLoading = !this.isLoading;
+            search.isLoading = ! search.isLoading;
         }
     },
     delimiters: ["${", "}$"]
