@@ -32,8 +32,9 @@ var form = new Vue({
             if (this.errors.length)
                 return;
             
-            search.isLoading = !search.isLoading;
-            const response = axios
+            search.isLoading = true;
+
+            axios
                 .post(
                     "/search", 
                     {
@@ -42,8 +43,12 @@ var form = new Vue({
                         allow_art: this.allowArt || false
                     }
                 )
-                .then(response => (search.searchResult = response.data));
-            search.isLoading = ! search.isLoading;
+                .then(
+                    function (response) {
+                        search.isLoading = false;
+                        search.searchResult = response.data;
+                    }
+                );
         }
     },
     delimiters: ["${", "}$"]
