@@ -9,6 +9,11 @@ var search = new Vue({
 
 var form = new Vue({
     el: "#search-form",
+    data: {
+            cards: "",
+            allowEmpty: "",
+            allowArt: ""
+    },
     methods: {
         getSearch: function (e) {
             const response = axios
@@ -16,8 +21,8 @@ var form = new Vue({
                     "/search", 
                     {
                         cards: this.$refs.cards.value.split(/\r?\n/),
-                        allow_empty: this.$refs.empty.value,
-                        allow_art: this.$refs.art.value
+                        allow_empty: this.allowEmpty,
+                        allow_art: this.allowArt
                     }
                 )
                 .then(response => (search.searchResult = response.data));

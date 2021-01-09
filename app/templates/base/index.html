@@ -5,18 +5,18 @@
         <div class="col-sm">
             <div class="input-group">
                 <span class="input-group-text">List of cards</span>
-                <textarea class="form-control" ref="cards" name="cards"></textarea>
+                <textarea class="form-control" v-model="cards" name="cards"></textarea>
             </div>
         </div>
         <div class="col-sm">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" ref="empty" id="allowNullAmount" :true-value="on">
+                <input class="form-check-input" type="checkbox" id="allowNullAmount" v-model="allowEmpty">
                 <label class="form-check-label" for="allowNullAmount">
                     Show me offers with no available cards
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" ref="art" id="allowArtCard" :true-value="on">
+                <input class="form-check-input" type="checkbox" id="allowArtCard" v-model="allowArt">
                 <label class="form-check-label" for="allowArtCard">
                     Allow art cards in search
                 </label>
