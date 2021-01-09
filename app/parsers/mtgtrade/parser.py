@@ -20,7 +20,7 @@ class Parser(BaseParser):
 
         for row in table.select(".search-card tbody tr"):
             amount = int(tag_strip(row.select_one(".sale-count")))
-            if not (self._allow_empty and amount):
+            if self._allow_empty != bool(amount):
                 continue
 
             last_seller = row.select_one(".trader-name a") or last_seller

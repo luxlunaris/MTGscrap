@@ -18,7 +18,7 @@ class Parser(BaseParser):
                 continue
 
             amount = int(row.select_one(".colvo").text.split()[0])
-            if not (self._allow_empty and amount):
+            if self._allow_empty != bool(amount):
                 continue
 
             result.append(

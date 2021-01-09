@@ -50,3 +50,6 @@ caption {
     color: #ffd9d9;
     font-weight: 600
 }
+.errors {
+    margin-top: 10px;
+}

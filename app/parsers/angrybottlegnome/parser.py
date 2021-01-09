@@ -24,7 +24,7 @@ class Parser(BaseParser):
             match = re.match( r'(\w+), +([\w\/]+) +(\w*)\s?\((\d+).+: (\d+)\)', tag_strip(row))
 
             amount = int(match.group(5))
-            if not (self._allow_empty and amount):
+            if self._allow_empty != bool(amount):
                 continue
 
             offers.append(
