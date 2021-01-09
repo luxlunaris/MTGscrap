@@ -12,3 +12,4 @@ aiohttp>=3.7
 aiohttp_retry>=2.3
 beautifulsoup4>=4.9
 aiofiles>=0.5
+python-multipart>=0.0
