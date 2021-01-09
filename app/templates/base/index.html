@@ -33,7 +33,7 @@
 </form>
 
 <div id="search-result">
-    <div :disabled="noLoad" class="lds-ring"><div></div><div></div><div></div><div></div></div>
-    <div :disabled="!noLoad" v-html="searchResult"></div>
+    <div :disabled="isLoading" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    <div :disabled="!isLoading" v-html="searchResult"></div>
 </div>
 {% endblock %}

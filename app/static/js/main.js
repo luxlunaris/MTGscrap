@@ -1,8 +1,14 @@
 var search = new Vue({
     el: "#search-result",
     data: {
+        isLoading: true,
         searchResult: "",
         isEmptyDisabled: false
+    },
+    computed: {
+        isLoading() {
+            return this.isLoading;
+        }
     },
     delimiters: ["${", "}$"]
 })
@@ -10,7 +16,6 @@ var search = new Vue({
 var form = new Vue({
     el: "#search-form",
     data: {
-            noLoad: true,
             errors: [],
             cards: "",
             allowEmpty: "",
@@ -32,7 +37,7 @@ var form = new Vue({
             if (this.errors.length)
                 return;
             
-            this.noLoad = !this.noLoad;
+            search.isLoading = !search.isLoading;
             const response = axios
                 .post(
                     "/search", 
@@ -43,12 +48,7 @@ var form = new Vue({
                     }
                 )
                 .then(response => (search.searchResult = response.data));
-            this.noLoad = !this.noLoad;
-        }
-    },
-    computed: {
-        noLoad() {
-            return this.noLoad;
+            this.isLoading = !this.isLoading;
         }
     },
     delimiters: ["${", "}$"]
