@@ -1,8 +1,11 @@
 {% extends 'base/base.html' %}
 {% block content %}
-<p>Hello world!</p>
-<form method="POST" action="/search">
-    <input type="text" name="cards">
-    <input type="submit" value="Send Request">
+<form id="search-form">
+    <p>Enter list of cards you want to search:</p>
+    <p><textarea ref="cards" name="cards"></textarea></p>
+    <button @click.prevent="getFormValues()" value="Search cards">
 </form>
+<div id="search-result">
+    ${ searchResult }$
+</div>
 {% endblock %}
