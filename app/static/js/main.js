@@ -46,5 +46,10 @@ var form = new Vue({
             this.noLoad = !this.noLoad;
         }
     },
+    computed: {
+        noLoad() {
+            return this.noLoad;
+        }
+    },
     delimiters: ["${", "}$"]
 })
