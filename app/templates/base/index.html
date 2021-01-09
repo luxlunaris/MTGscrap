@@ -1,9 +1,17 @@
 {% extends 'base/base.html' %}
 {% block content %}
 <form id="search-form">
-    <p>Enter list of cards you want to search:</p>
-    <p><textarea ref="cards" name="cards"></textarea></p>
-    <button @click.prevent="getSearch()">Search cards</button>
+    <div class="row">
+        <div class="col-sm">
+            <div class="input-group">
+                <span class="input-group-text">List of cards</span>
+                <textarea class="form-control" aria-label="With textarea"></textarea>
+            </div>
+        </div>
+        <div class="col-sm">
+            <button @click.prevent="getSearch()" class="btn btn-outline-primary">Search cards</button>
+        </div>
+    </div>
 </form>
 <div id="search-result" v-html="searchResult"></div>
 {% endblock %}
