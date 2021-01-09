@@ -11,9 +11,15 @@ var form = new Vue({
     el: "#search-form",
     methods: {
         getSearch: function (e) {
-            const cards = this.$refs.cards.value;
             const response = axios
-                .post("/search", cards.split(/\r?\n/))
+                .post(
+                    "/search", 
+                    {
+                        cards: this.$refs.cards.value.split(/\r?\n/),
+                        allow_empty: this.$refs.empty.value,
+                        allow_art: this.$refs.art.value
+                    }
+                )
                 .then(response => (search.searchResult = response.data));
         }
     }

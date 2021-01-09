@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         {% for offer in card_offers %}
-            <tr {% if offer.amount == 0 %}v-bind:disabled="isEmptyDisabled"{% endif %} class="offer">
+            <tr class="offer">
                 <td><a href="{{ offer.link }}">{{ offer.card_name }}</a></td>
                 <td>{{ offer.language }}</td>
                 <td>{{ offer.is_foil }}</td>
