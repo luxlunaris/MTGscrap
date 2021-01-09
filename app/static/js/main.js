@@ -16,13 +16,16 @@ var form = new Vue({
             allowArt: ""
     },
     methods: {
+        flushErrors: function (e) {
+            this.errors = []
+        },
         checkForm: function (e) {
             if (!this.cards) {
                 this.errors.push("List of cards cannot be empty")
             }
         },
         getSearch: function (e) {
-            this.errors = [];
+            this.flushErrors();
             this.checkForm();
 
             if (this.errors.length)

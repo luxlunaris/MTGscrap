@@ -48,7 +48,7 @@ def _get_coroutines_from_parsers(cards, parsers, allow_empty, allow_art):
     coroutines = []
     for parser in parsers:
         parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(allow_empty, allow_art)
-        coroutines += [parser.parse_card_offers(card, allow_empty, allow_art) for card in cards]
+        coroutines += [parser.parse_card_offers(card) for card in cards]
     return coroutines
 
 
