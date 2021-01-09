@@ -18,13 +18,13 @@ var form = new Vue({
     methods: {
         checkForm: function (e) {
             if (!this.cards) {
-                errors.push("List of cards cannot be empty")
+                this.errors.push("List of cards cannot be empty")
             }
         },
         getSearch: function (e) {
             this.errors = [];
             this.checkForm();
-            
+
             if (this.errors.length)
                 return;
 
@@ -39,5 +39,6 @@ var form = new Vue({
                 )
                 .then(response => (search.searchResult = response.data));
         }
-    }
+    },
+    delimiters: ["${", "}$"]
 })
