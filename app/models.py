@@ -173,7 +173,9 @@ class BaseParser(ABC):
         """
         url = self._get_full_url(query)
         print(f"GET request: {url}")
-        async with RetryClient(retry_options=ExponentialRetry) as client:
+        async with RetryClient(
+            retry_options=ExponentialRetry(attempts=1)
+        ) as client:
             async with client.get(url) as response:
                 html = await response.text()
         return self._to_soup(html)
