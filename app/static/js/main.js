@@ -10,7 +10,7 @@ var search = new Vue({
 var form = new Vue({
     el: "#search-form",
     methods: {
-        getSearch: async function (e) {
+        getSearch: function (e) {
             const cards = this.$refs.cards.value;
             const response = axios
                 .post("/search", cards.split(/\r?\n/))

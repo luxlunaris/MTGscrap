@@ -11,6 +11,9 @@
         <div class="col-sm">
             <button @click.prevent="getSearch()" class="btn btn-outline-primary">Search cards</button>
         </div>
+        <div class="col-sm">
+            <p>This tool provides you ability to search for offers on certain MTG singles. Just pust one card in a row in the text field to the left and wait. Then you will get all available offers on supported platforms.</p>
+        </div>
     </div>
 </form>
 <div id="search-result" v-html="searchResult"></div>
