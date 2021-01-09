@@ -11,6 +11,9 @@ from fastapi import Request, Form
 from starlette.responses import JSONResponse, HTMLResponse
 
 
+JSONArray = List[str]
+
+
 def silence_event_loop_closed(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
@@ -39,8 +42,8 @@ async def home(request: Request):
 
 
 @app.post("/search/", response_class=HTMLResponse)
-async def search(request: Request, cards: str):
-    offers = await parse_offers(cards.split('\n'), config.PARSERS)
+async def search(request: Request, cards: JSONArray):
+    offers = await parse_offers(cards, config.PARSERS)
     return app.templates.TemplateResponse(
         "reports/search.html", {"request": request, "offers": offers}
     )
