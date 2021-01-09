@@ -11,3 +11,4 @@ black>=20.8b1
 aiohttp>=3.7
 aiohttp_retry>=2.3
 beautifulsoup4>=4.9
+aiofiles>=0.5
