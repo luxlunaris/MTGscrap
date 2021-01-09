@@ -39,7 +39,7 @@ async def home(request: Request):
 
 @app.post("/search/", response_class=HTMLResponse)
 async def search(request: Request, args: SearchJSON):
-    offers = await parse_offers(**args, parsers=config.PARSERS)
+    offers = await parse_offers(**args.dict(), parsers=config.PARSERS)
     return app.templates.TemplateResponse(
         "reports/search.html", {"request": request, "offers": offers}
     )

@@ -10,14 +10,14 @@
         </div>
         <div class="col-sm">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" ref="empty" id="allowNullAmount">
-                <label class="form-check-label" for="flexCheckDefault">
+                <input class="form-check-input" type="checkbox" ref="empty" id="allowNullAmount" :true-value="on">
+                <label class="form-check-label" for="allowNullAmount">
                     Show me offers with no available cards
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" ref="art" id="allowArtCard">
-                <label class="form-check-label" for="flexCheckDefault">
+                <input class="form-check-input" type="checkbox" ref="art" id="allowArtCard" :true-value="on">
+                <label class="form-check-label" for="allowArtCard">
                     Allow art cards in search
                 </label>
             </div>
