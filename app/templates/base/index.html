@@ -33,7 +33,7 @@
 </form>
 
 <div id="search-result">
-    <div :class="{ d-none: !isLoading }" class="lds-ring"><div></div><div></div><div></div><div></div></div>
-    <div :class="{ d-none: isLoading }" v-html="searchResult"></div>
+    <div :class="{ 'd-none': !isLoading }" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    <div :class="{ 'd-none': isLoading }" v-html="searchResult"></div>
 </div>
 {% endblock %}
