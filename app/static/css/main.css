@@ -58,7 +58,8 @@ caption {
     margin-top: 10px;
 }
 #search-result {
-    overflow-x: scroll;
+    overflow-x: auto;
+    overflow-y: hidden;
     margin-top: 10px;
 }
 .errors .alert.alert-danger {
