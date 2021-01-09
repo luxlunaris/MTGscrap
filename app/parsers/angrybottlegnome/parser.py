@@ -14,10 +14,19 @@ class Parser(BaseParser):
 
     def __parse_offers_from_card_page(self, page):
         offers = []
+
         card_name = tag_strip(page.select_one('h1'))
+        if not self._allow_art and "Art Card" in card_name:
+            return {}
+ 
         seller = Seller(name="Angrybottlegnome", link=self._DOMAIN)
         for row in page.select(".abg-card-version-instock, .abg-card-version-outofstock"):
             match = re.match( r'(\w+), +([\w\/]+) +(\w*)\s?\((\d+).+: (\d+)\)', tag_strip(row))
+
+            amount = int(match.group(5))
+            if not (self._allow_empty and amount):
+                continue
+
             offers.append(
                 Offer(
                     card_name=card_name,
@@ -27,7 +36,7 @@ class Parser(BaseParser):
                     link=self._get_full_url(self._SEARCH.format(quote(card_name))),
                     price=Decimal(match.group(4)),
                     currency_code=self.CURRENCY_CODE,
-                    amount=int(match.group(5)),
+                    amount=amount,
                     seller=seller
                 )
             )

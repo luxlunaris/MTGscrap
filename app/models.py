@@ -5,9 +5,11 @@ import os
 from abc import ABC, abstractmethod
 from pprint import pformat
 from urllib.parse import quote_plus, urljoin
+from typing import List
 
 from aiohttp_retry import RetryClient, ExponentialRetry
 from bs4 import BeautifulSoup
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 def tag_strip(tag):
@@ -36,7 +38,7 @@ def merge_list_dictionaries(*ds):
     return ds[0]
 
 
-def _get_coroutines_from_parsers(cards, parsers):
+def _get_coroutines_from_parsers(cards, parsers, allow_empty, allow_art):
     """
     :param cards: names of cards to search for
     :type cards: list
@@ -45,12 +47,12 @@ def _get_coroutines_from_parsers(cards, parsers):
     """
     coroutines = []
     for parser in parsers:
-        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser()
-        coroutines += [parser.parse_card_offers(card) for card in cards]
+        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(allow_empty, allow_art)
+        coroutines += [parser.parse_card_offers(card, allow_empty, allow_art) for card in cards]
     return coroutines
 
 
-async def parse_offers(cards, parsers):
+async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
     """
     :param cards: names of cards to search for
     :type cards: list
@@ -59,13 +61,28 @@ async def parse_offers(cards, parsers):
     :return: available offers
     :rtype: dict
     """
-    offers = await asyncio.gather(*_get_coroutines_from_parsers(cards, parsers))
+    offers = await asyncio.gather(
+        *_get_coroutines_from_parsers(
+            cards,
+            parsers,
+            allow_empty,
+            allow_art
+        )
+    )
     result = merge_list_dictionaries(*offers)
 
     for card in result:
         result[card].sort(key=lambda x: x.price)
 
     return result
+
+
+class SearchJSON(BaseModel):
+    """Model of JSON for search request"""
+
+    cards: List[str]
+    allow_empty: bool
+    allow_art: bool
 
 
 class Seller:
@@ -145,6 +162,10 @@ class BaseParser(ABC):
 
     CURRENCY_CODE = NotImplemented
 
+    def __init__(self, allow_empty, allow_art):
+        self._allow_empty = allow_empty
+        self._allow_art = allow_art
+
     @staticmethod
     def _to_soup(html_text):
         """
@@ -190,7 +211,7 @@ class BaseParser(ABC):
         return await self._get_page(self._SEARCH.format(quote_plus(search)))  # pylint: disable=no-member
 
     @abstractmethod
-    async def parse_card_offers(self, card):
+    async def parse_card_offers(self, card, allow_empty, allow_art):
         """
         :param card: card name to search offers for
         :type card: str

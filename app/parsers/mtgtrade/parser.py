@@ -13,8 +13,16 @@ class Parser(BaseParser):
 
     def __parse_vertical_table(self, table):
         result = []
+        
         name = tag_strip(table.select_one("a.catalog-title"))
+        if not self._allow_art and "Art Card" in name:
+            return {}
+
         for row in table.select(".search-card tbody tr"):
+            amount = int(tag_strip(row.select_one(".sale-count")))
+            if not (self._allow_empty and amount):
+                continue
+
             last_seller = row.select_one(".trader-name a") or last_seller
             result.append(
                 {
@@ -28,7 +36,7 @@ class Parser(BaseParser):
                     ),
                     "link": self._get_full_url(self._SEARCH.format(quote_plus(name))),
                     "price": Decimal(tag_strip(row.select_one(".catalog-rate-price"))),
-                    "amount": int(tag_strip(row.select_one(".sale-count"))),
+                    "amount": amount,
                     "seller": Seller(
                         name=tag_strip(last_seller),
                         link=self._get_full_url(last_seller.attrs["href"]),

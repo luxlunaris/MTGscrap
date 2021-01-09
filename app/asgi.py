@@ -1,17 +1,13 @@
 import asyncio
 from asyncio.proactor_events import _ProactorBasePipeTransport
 from functools import wraps
-from typing import List
 
 from .config import config
 from .app import create_app
-from .models import parse_offers
+from .models import parse_offers, SearchJSON
 
 from fastapi import Request, Form
 from starlette.responses import JSONResponse, HTMLResponse
-
-
-JSONArray = List[str]
 
 
 def silence_event_loop_closed(func):
@@ -42,8 +38,8 @@ async def home(request: Request):
 
 
 @app.post("/search/", response_class=HTMLResponse)
-async def search(request: Request, cards: JSONArray):
-    offers = await parse_offers(cards, config.PARSERS)
+async def search(request: Request, args: SearchJSON):
+    offers = await parse_offers(**args, parsers=config.PARSERS)
     return app.templates.TemplateResponse(
         "reports/search.html", {"request": request, "offers": offers}
     )
