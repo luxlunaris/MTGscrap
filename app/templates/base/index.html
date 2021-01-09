@@ -31,5 +31,9 @@
         </div>
     </div>
 </form>
-<div id="search-result" v-html="searchResult"></div>
+
+<div id="search-result">
+    <div :disabled="noLoad" class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    <div :disabled="!noLoad" v-html="searchResult"></div>
+</div>
 {% endblock %}

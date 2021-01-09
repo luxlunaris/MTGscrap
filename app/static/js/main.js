@@ -10,6 +10,7 @@ var search = new Vue({
 var form = new Vue({
     el: "#search-form",
     data: {
+            noLoad: true,
             errors: [],
             cards: "",
             allowEmpty: "",
@@ -30,7 +31,8 @@ var form = new Vue({
 
             if (this.errors.length)
                 return;
-
+            
+            this.noLoad = !this.noLoad;
             const response = axios
                 .post(
                     "/search", 
@@ -41,6 +43,7 @@ var form = new Vue({
                     }
                 )
                 .then(response => (search.searchResult = response.data));
+            this.noLoad = !this.noLoad;
         }
     },
     delimiters: ["${", "}$"]
