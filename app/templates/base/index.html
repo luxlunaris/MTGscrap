@@ -9,10 +9,22 @@
             </div>
         </div>
         <div class="col-sm">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="allowNullAmount">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Show me offers with no available cards
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="allowArtCard">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Allow art cards in search
+                </label>
+            </div>
             <button @click.prevent="getSearch()" class="btn btn-outline-primary">Search cards</button>
         </div>
         <div class="col-sm">
-            <p>This tool provides you ability to search for offers on certain MTG singles. Just pust one card in a row in the text field to the left and wait. Then you will get all available offers on supported platforms.</p>
+            <p>This tool provides you ability to search for offers of certain MTG singles. Just pust card names (one in a row) in the text field to the left and wait. Then you will get all available offers on supported platforms.</p>
         </div>
     </div>
 </form>
