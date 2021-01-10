@@ -39,7 +39,7 @@ def merge_list_dictionaries(*ds):
     return ds[0]
 
 
-def _get_coroutines_from_parsers(cards, parsers, allow_empty, allow_art):
+def _get_coroutines_from_parsers(cards, parsers, semaphore, allow_empty, allow_art):
     """
     :param cards: names of cards to search for
     :type cards: list
@@ -48,7 +48,7 @@ def _get_coroutines_from_parsers(cards, parsers, allow_empty, allow_art):
     """
     coroutines = []
     for parser in parsers:
-        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(allow_empty, allow_art)
+        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(allow_empty, allow_art, semaphore)
         coroutines += [parser.parse_card_offers(card) for card in cards]
     return coroutines
 
@@ -62,7 +62,7 @@ def is_valid_payload(payload):
         return False
     return True
 
-async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
+async def parse_offers(cards, parsers, semaphore, allow_empty=True, allow_art=True):
     """
     :param cards: names of cards to search for
     :type cards: list
@@ -75,6 +75,7 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
         *_get_coroutines_from_parsers(
             cards,
             parsers,
+            semaphore,
             allow_empty,
             allow_art
         ),
@@ -84,7 +85,7 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
     offers = []
     for item in result:
         if type(item) is not dict:
-            print("During work of parsers the exception happened: {item}")
+            print(f"During work of parsers the exception happened: {item}")
         else:
             offers.append(item)
 
@@ -181,9 +182,10 @@ class BaseParser(ABC):
 
     CURRENCY_CODE = NotImplemented
 
-    def __init__(self, allow_empty, allow_art):
+    def __init__(self, allow_empty, allow_art, semaphore):
         self._allow_empty = allow_empty
         self._allow_art = allow_art
+        self._semaphore = semaphore
 
     @staticmethod
     def _to_soup(html_text):
@@ -213,11 +215,12 @@ class BaseParser(ABC):
         """
         url = self._get_full_url(query)
         print(f"GET request: {url}")
-        async with RetryClient(
-            retry_options=ExponentialRetry(attempts=3)
-        ) as client:
-            async with client.get(url) as response:
-                html = await response.text()
+        async with self._semaphore:
+            async with RetryClient(
+                retry_options=ExponentialRetry(attempts=3)
+            ) as client:
+                async with client.get(url) as response:
+                    html = await response.text()
         return self._to_soup(html)
 
     async def _get_offers_page(self, search):

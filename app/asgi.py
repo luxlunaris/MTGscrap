@@ -43,7 +43,7 @@ async def search(request: Request, args: SearchJSON):
     if not is_valid_payload(args):
         return Response(content="Invalid data", status_code=400)
     
-    offers = await parse_offers(**args, parsers=config.PARSERS)
+    offers = await parse_offers(**args, parsers=config.PARSERS, semaphore=config.SEMAPHORE)
     return app.templates.TemplateResponse(
         "reports/search.html", {"request": request, "offers": offers}
     )
