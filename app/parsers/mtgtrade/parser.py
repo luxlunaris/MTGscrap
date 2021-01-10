@@ -24,26 +24,30 @@ class Parser(BaseParser):
                 continue
 
             last_seller = row.select_one(".trader-name a") or last_seller
-            result.append(
-                {
-                    "card_name": name,
-                    "language": row.select_one(".card-properties .lang-item")
-                    .attrs["title"]
-                    .lower(),
-                    "is_foil": row.select_one("img .foil") is not None,
-                    "condition": tag_strip(
-                        row.select_one(".card-properties .js-card-quality-tooltip")
-                    ),
-                    "link": self._get_full_url(self._SEARCH.format(quote_plus(name))),
-                    "price": Decimal(tag_strip(row.select_one(".catalog-rate-price"))),
-                    "amount": amount,
-                    "seller": Seller(
-                        name=tag_strip(last_seller),
-                        link=self._get_full_url(last_seller.attrs["href"]),
-                        source="MTGTrade",
-                    ),
-                }
-            )
+            try:
+                result.append(
+                    {
+                        "card_name": name,
+                        "language": row.select_one(".card-properties .lang-item")
+                        .attrs["title"]
+                        .lower(),
+                        "is_foil": row.select_one("img .foil") is not None,
+                        "condition": tag_strip(
+                            row.select_one(".card-properties .js-card-quality-tooltip")
+                        ),
+                        "link": self._get_full_url(self._SEARCH.format(quote_plus(name))),
+                        "price": Decimal(tag_strip(row.select_one(".catalog-rate-price"))),
+                        "amount": amount,
+                        "seller": Seller(
+                            name=tag_strip(last_seller),
+                            link=self._get_full_url(last_seller.attrs["href"]),
+                            source="MTGTrade",
+                        ),
+                    }
+                )
+            except (AttributeError, TypeError) as e:
+                print(e)
+                continue
 
         return result
 

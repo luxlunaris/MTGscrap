@@ -26,20 +26,25 @@ class Parser(BaseParser):
             amount = int(match.group(5))
             if not (amount or self._allow_empty):
                 continue
-
-            offers.append(
-                Offer(
-                    card_name=card_name,
-                    language=match.group(1).lower(),
-                    is_foil=match.group(3) == "Фойл",
-                    condition=match.group(2),
-                    link=self._get_full_url(self._SEARCH.format(quote(card_name))),
-                    price=Decimal(match.group(4)),
-                    currency_code=self.CURRENCY_CODE,
-                    amount=amount,
-                    seller=seller
+            
+            try:
+                offers.append(
+                    Offer(
+                        card_name=card_name,
+                        language=match.group(1).lower(),
+                        is_foil=match.group(3) == "Фойл",
+                        condition=match.group(2),
+                        link=self._get_full_url(self._SEARCH.format(quote(card_name))),
+                        price=Decimal(match.group(4)),
+                        currency_code=self.CURRENCY_CODE,
+                        amount=amount,
+                        seller=seller
+                    )
                 )
-            )
+            except (AttributeError, TypeError) as e:
+                print(e)
+                continue
+
         return offers
 
     def __parse_search_table(self, table):

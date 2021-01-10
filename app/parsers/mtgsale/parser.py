@@ -20,20 +20,25 @@ class Parser(BaseParser):
             amount = int(row.select_one(".colvo").text.split()[0])
             if not (amount or self._allow_empty):
                 continue
-
-            result.append(
-                {
-                    "card_name": card_name,
-                    "language": row.select_one(".lang i").attrs["title"].lower(),
-                    "is_foil": tag_strip(row.select_one(".foil")) == "Фойл",
-                    "condition": tag_strip(row.select_one(".sost span")),
-                    "link": self._get_full_url(
-                        row.select_one("a.tnamec").attrs["href"]
-                    ),
-                    "price": Decimal(row.select_one(".pprice").text.split()[0]),
-                    "amount": amount,
-                }
-            )
+            
+            try:
+                result.append(
+                    {
+                        "card_name": card_name,
+                        "language": row.select_one(".lang i").attrs["title"].lower(),
+                        "is_foil": tag_strip(row.select_one(".foil")) == "Фойл",
+                        "condition": tag_strip(row.select_one(".sost span")),
+                        "link": self._get_full_url(
+                            row.select_one("a.tnamec").attrs["href"]
+                        ),
+                        "price": Decimal(row.select_one(".pprice").text.split()[0]),
+                        "amount": amount,
+                    }
+                )
+            except (AttributeError, TypeError) as e:
+                print(e)
+                continue
+        
         return result
 
     async def parse_card_offers(self, card):

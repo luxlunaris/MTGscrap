@@ -61,14 +61,23 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
     :return: available offers
     :rtype: dict
     """
-    offers = await asyncio.gather(
+    result = await asyncio.gather(
         *_get_coroutines_from_parsers(
             cards,
             parsers,
             allow_empty,
             allow_art
-        )
+        ),
+        return_exceptions=True
     )
+
+    offers = []
+    for item in result:
+        if issubclass(item, Exception):
+            print("During work of parsers the exception happened: {item}")
+        else:
+            offers.append(item)
+
     result = merge_list_dictionaries(*offers)
 
     for card in result:
