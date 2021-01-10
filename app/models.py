@@ -8,6 +8,7 @@ from urllib.parse import quote_plus, urljoin
 from typing import List
 from inspect import isclass
 
+from aiohttp.client_exceptions import ClientError
 from aiohttp_retry import RetryClient, ExponentialRetry
 from bs4 import BeautifulSoup
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
@@ -83,7 +84,7 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
 
     offers = []
     for item in result:
-        if isclass(item) and issubclass(item, Exception):
+        if isclass(item) and issubclass(item, Exception, ClientError):
             print("During work of parsers the exception happened: {item}")
         else:
             offers.append(item)
@@ -214,7 +215,7 @@ class BaseParser(ABC):
         url = self._get_full_url(query)
         print(f"GET request: {url}")
         async with RetryClient(
-            retry_options=ExponentialRetry(attempts=1)
+            retry_options=ExponentialRetry(attempts=3)
         ) as client:
             async with client.get(url) as response:
                 html = await response.text()
