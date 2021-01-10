@@ -15,4 +15,5 @@ def create_app():
     app = FastAPI(title=config.PROJECT_NAME, version="0.1", docs_url="/api")
     app.mount("/static", StaticFiles(directory="app/static"), name="static")
     app.templates = Jinja2Templates(directory="app/templates")
+    app.semaphore = asyncio.Semaphore(config.SEMAPHORE_COUNT)
     return app
