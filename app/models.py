@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 from pprint import pformat
 from urllib.parse import quote_plus, urljoin
 from typing import List
+from inspect import isclass
 
 from aiohttp_retry import RetryClient, ExponentialRetry
 from bs4 import BeautifulSoup
@@ -73,7 +74,7 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
 
     offers = []
     for item in result:
-        if issubclass(item, Exception):
+        if isclass(item) and issubclass(item, Exception):
             print("During work of parsers the exception happened: {item}")
         else:
             offers.append(item)
