@@ -12,7 +12,7 @@ var form = new Vue({
     el: "#search-form",
     data: {
             errors: [],
-            availableErrors: [
+            errorText: [
                 "List of cards cannot be empty",
                 "List cannot be longer than 15 cards",
                 "Card name cannot be empty",
@@ -30,21 +30,22 @@ var form = new Vue({
         checkForm: function (e) {
             this.cardsList = this.cards.split(/\r?\n/);
 
-            if (!this.cardsList.length && !this.errors.indexOf(this.availableErrors[0])) {
-                this.errors.push(this.availableErrors[0]);
+            if (
+                !this.cardsList.length && this.errors.indexOf(this.errorText[0]) === -1) {
+                this.errors.push(this.errorText[0]);
                 return
             }
 
-            if (this.cardsList.length > 15 && !this.errors.indexOf(this.availableErrors[1])) {
-                this.errors.push(this.availableErrors[1]);
+            if (this.cardsList.length > 15 && this.errors.indexOf(this.errorText[1]) === -1) {
+                this.errors.push(this.errorText[1]);
             }
 
            for (item of this.cardsList) {
-                if (/^ *$/.test(item) && !this.errors.indexOf(this.availableErrors[2])) {
-                    this.errors.push(this.availableErrors[2]);
+                if (/^ *$/.test(item) && this.errors.indexOf(this.errorText[2]) === -1) {
+                    this.errors.push(this.errorText[2]);
                 }
-                else if (item.length < 3 && !this.errors.indexOf(this.availableErrors[3])) {
-                    this.errors.push(this.availableErrors[3]);
+                else if (item.length < 3 && this.errors.indexOf(this.errorText[3]) === -1) {
+                    this.errors.push(this.errorText[3]);
                 }
             };
             
