@@ -1,4 +1,5 @@
 {% for card, card_offers in offers.items() %}
+<div class="table-wrapper">
     <table class="offers">
         <caption>Search query: "{{ card }}"</caption>
         <thead>
@@ -13,17 +14,18 @@
         </thead>
         <tbody>
         {% for offer in card_offers %}
-            <tr class="offer">
-                <td><a href="{{ offer.link }}">{{ offer.card_name }}</a></td>
-                <td>{{ offer.language }}</td>
-                <td>{{ offer.is_foil }}</td>
-                <td>{{ offer.condition }}</td>
-                <td>{{ offer.price }}</td>
-                <td>{{ offer.currency_code }}</td>
-                <td>{{ offer.amount }}</td>
-                <td><a href="{{ offer.seller.link }}">{{ offer.seller.name }}</a>{% if offer.seller.source %} ({{ offer.seller.source }}){% endif %}</td>
-            </tr>
+        <tr class="offer">
+            <td><a href="{{ offer.link }}">{{ offer.card_name }}</a></td>
+            <td>{{ offer.language }}</td>
+            <td>{{ offer.is_foil }}</td>
+            <td>{{ offer.condition }}</td>
+            <td>{{ offer.price }}</td>
+            <td>{{ offer.currency_code }}</td>
+            <td>{{ offer.amount }}</td>
+            <td><a href="{{ offer.seller.link }}">{{ offer.seller.name }}</a>{% if offer.seller.source %} ({{ offer.seller.source }}){% endif %}</td>
+        </tr>
         {% endfor %}
         </tbody>
     </table>
+</div>
 {% endfor %}

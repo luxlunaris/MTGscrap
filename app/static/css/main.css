@@ -58,7 +58,6 @@ caption {
     margin-top: 10px;
 }
 #search-result {
-    overflow-x: auto;
     overflow-y: hidden;
     margin-top: 10px;
 }
@@ -102,4 +101,6 @@ caption {
       transform: rotate(360deg);
     }
   }
-  
+.table-wrapper {
+    overflow-x: auto;
+}
