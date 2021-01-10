@@ -68,10 +68,15 @@ var form = new Vue({
                         allow_art: this.allowArt || false
                     }
                 )
+                .catch(
+                    function (error) {
+                        console.log(error);
+                        search.searchResult = '<div class="alert alert-danger">Something went wrong. Sorry!</div>';                    }
+                )
                 .then(
                     function (response) {
                         search.isLoading = false;
-                        search.searchResult = response.data;
+                        if (response) search.searchResult = response.data;
                     }
                 );
         }

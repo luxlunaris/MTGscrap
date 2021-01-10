@@ -84,7 +84,7 @@ async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
 
     offers = []
     for item in result:
-        if isclass(item) and issubclass(item, Exception, ClientError):
+        if isclass(item) and issubclass(item, (Exception, ClientError)):
             print("During work of parsers the exception happened: {item}")
         else:
             offers.append(item)
