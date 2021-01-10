@@ -53,6 +53,15 @@ def _get_coroutines_from_parsers(cards, parsers, allow_empty, allow_art):
     return coroutines
 
 
+def is_valid_payload(payload):
+    if (
+        len(payload["cards"]) < 1 or 
+        len(payload["cards"]) > 15 or
+        any(not card.strip() or len(card) < 3 for card in payload["cards"])
+    ):
+        return False
+    return True
+
 async def parse_offers(cards, parsers, allow_empty=True, allow_art=True):
     """
     :param cards: names of cards to search for

@@ -4,9 +4,9 @@ from functools import wraps
 
 from .config import config
 from .app import create_app
-from .models import parse_offers, SearchJSON
+from .models import parse_offers, SearchJSON, is_valid_payload
 
-from fastapi import Request, Form
+from fastapi import Request, Form, Response
 from starlette.responses import JSONResponse, HTMLResponse
 
 
@@ -37,9 +37,13 @@ async def home(request: Request):
     )
 
 
-@app.post("/search/", response_class=HTMLResponse)
+@app.post("/search", response_class=HTMLResponse)
 async def search(request: Request, args: SearchJSON):
-    offers = await parse_offers(**args.dict(), parsers=config.PARSERS)
+    args = args.dict()
+    if not is_valid_payload(args):
+        return Response(content="Invalid data", status_code=400)
+    
+    offers = await parse_offers(**args, parsers=config.PARSERS)
     return app.templates.TemplateResponse(
         "reports/search.html", {"request": request, "offers": offers}
     )
