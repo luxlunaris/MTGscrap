@@ -5,10 +5,7 @@
         <div class="col-sm">
             <div class="input-group">
                 <span class="input-group-text">List of cards</span>
-                <textarea class="form-control" v-model="cards" @click="flushErrors" name="cards"></textarea>
-            </div>
-            <div class="errors" v-if="errors.length">
-                <div class="alert alert-danger" v-for="error in errors">${ error }$</div>
+                <textarea class="form-control" v-model="cards" @focus="flushErrors" name="cards"></textarea>
             </div>
         </div>
         <div class="col-sm">
@@ -30,10 +27,15 @@
             <p>This tool provides you ability to search for offers of certain MTG singles. Just pust card names (one in a row) in the text field to the left and wait. Then you will get all available offers on supported platforms.</p>
         </div>
     </div>
+    <div class="row">
+        <div class="errors" v-if="errors.length">
+            <div class="alert alert-danger" v-for="error in errors">${ error }$</div>
+        </div>
+    </div>
 </form>
 
 <div id="search-result">
     <div :class="{ 'd-none': !isLoading }" class="lds-ring"><div></div><div></div><div></div><div></div></div>
-    <div :class="{ 'd-none': isLoading }" v-html="searchResult"></div>
+    <div v-html="searchResult"></div>
 </div>
 {% endblock %}

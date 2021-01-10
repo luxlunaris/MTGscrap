@@ -63,7 +63,8 @@ caption {
     margin-top: 10px;
 }
 .errors .alert.alert-danger {
-    position: absolute;
+    display: inline-block;
+    margin-right: 20px;
 }
 .lds-ring {
     display: block;
