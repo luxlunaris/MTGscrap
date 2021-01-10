@@ -28,13 +28,12 @@ var form = new Vue({
             this.errors = []
         },
         checkForm: function (e) {
-            this.cardsList = this.cards.split(/\r?\n/);
-
-            if (
-                !this.cardsList.length && this.errors.indexOf(this.errorText[0]) === -1) {
+            if (!this.cards.length && this.errors.indexOf(this.errorText[0]) === -1) {
                 this.errors.push(this.errorText[0]);
                 return
             }
+
+            this.cardsList = this.cards.split(/\r?\n/);
 
             if (this.cardsList.length > 15 && this.errors.indexOf(this.errorText[1]) === -1) {
                 this.errors.push(this.errorText[1]);
