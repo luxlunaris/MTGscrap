@@ -5,12 +5,14 @@ from app.models import BaseParser, Offer, Seller, tag_strip
 
 
 class Parser(BaseParser):
+    """Extraction and transformation rules for source mtgsale.ru"""
+
     _DOMAIN = "https://mtgsale.ru"
     _SEARCH = "/home/search-results?Name={}"
 
     CURRENCY_CODE = "RUB"
 
-    def __parse_vertical_table(self, table):
+    def _parse_vertical_table(self, table):
         result = []
         for row in table.select(".ctclass"):
             card_name = tag_strip(row.select_one("a.tnamec"))
@@ -20,7 +22,7 @@ class Parser(BaseParser):
             amount = int(row.select_one(".colvo").text.split()[0])
             if not (amount or self._allow_empty):
                 continue
-            
+
             try:
                 result.append(
                     {
@@ -38,15 +40,16 @@ class Parser(BaseParser):
             except (AttributeError, TypeError) as e:
                 print(e)
                 continue
-        
+
         return result
 
     async def parse_card_offers(self, card):
+        """Extracts information from given page and transforms it"""
         seller = Seller(name="MTGSale", link=self._DOMAIN)
         page = await self._get_offers_page(card)
         return {
             card: [
                 Offer(**row, currency_code=self.CURRENCY_CODE, seller=seller)
-                for row in self.__parse_vertical_table(page.select_one("#taba"))
+                for row in self._parse_vertical_table(page.select_one("#taba"))
             ]
         }

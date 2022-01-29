@@ -1,85 +1,61 @@
 import asyncio
 import importlib
 import json
-import os
 from abc import ABC, abstractmethod
 from pprint import pformat
 from urllib.parse import quote_plus, urljoin
 from typing import List
 
-from aiohttp.client_exceptions import ClientError
 from aiohttp_retry import RetryClient, ExponentialRetry
 from bs4 import BeautifulSoup
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 
 
 def tag_strip(tag):
-    """
-    :param tag: HTML tag to get clean text from
-    :type tag: bs4.Tag
-    :return: clean text from tag
-    :rtype: str
-    """
+    """Takes text from tag and returns it stripped from whitespace"""
     return tag.text.strip()
 
 
-def merge_list_dictionaries(*ds):
-    """
-    :param ds: dictionaries with list values
-    :type ds: tuple
-    :return: merged dictionaries with appended values
-    :rtype: dict
-    """
-    for d2 in ds[1:]:
-        for k in d2:
-            if k in ds[0]:
-                ds[0][k] += d2[k]
+def merge_list_dictionaries(*dictionaries):
+    """Merges dictionary list values from given dictionaries"""
+    for addendum in dictionaries[1:]:
+        for key in addendum:
+            if key in dictionaries[0]:
+                dictionaries[0][key] += addendum[key]
             else:
-                ds[0][k] = d2[k]
-    return ds[0]
+                dictionaries[0][key] = addendum[key]
+    return dictionaries[0]
 
 
 def _get_coroutines_from_parsers(cards, parsers, semaphore, allow_empty, allow_art):
-    """
-    :param cards: names of cards to search for
-    :type cards: list
-    :return: coroutines for offers from given parsers
-    :rtype: list
-    """
+    """Gathers coroutines from allowed parsers"""
     coroutines = []
     for parser in parsers:
-        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(allow_empty, allow_art, semaphore)
+        parser = importlib.import_module(f"app.parsers.{parser}.parser").Parser(
+            allow_empty, allow_art, semaphore
+        )
         coroutines += [parser.parse_card_offers(card) for card in cards]
     return coroutines
 
 
 def is_valid_payload(payload):
+    """Validates search query size"""
     if (
-        len(payload["cards"]) < 1 or 
-        len(payload["cards"]) > 15 or
-        any(not card.strip() or len(card) < 3 for card in payload["cards"])
+        len(payload["cards"]) < 1
+        or len(payload["cards"]) > 15
+        or any(not card.strip() or len(card) < 3 for card in payload["cards"])
     ):
         return False
     return True
 
+
 async def parse_offers(cards, parsers, semaphore, allow_empty=True, allow_art=True):
-    """
-    :param cards: names of cards to search for
-    :type cards: list
-    :param parsers: names of parsers to search from
-    :type parsers: list
-    :return: available offers
-    :rtype: dict
-    """
+    """Gathers offers and parses them"""
     result = await asyncio.gather(
         *_get_coroutines_from_parsers(
-            cards,
-            parsers,
-            semaphore,
-            allow_empty,
-            allow_art
+            cards, parsers, semaphore, allow_empty, allow_art
         ),
-        return_exceptions=True
+        return_exceptions=True,
     )
 
     offers = []
@@ -98,7 +74,7 @@ async def parse_offers(cards, parsers, semaphore, allow_empty=True, allow_art=Tr
 
 
 class SearchJSON(BaseModel):
-    """Model of JSON for search request"""
+    """JSON for search request"""
 
     cards: List[str]
     allow_empty: bool
@@ -117,15 +93,12 @@ class Seller:
         return pformat(self.__dict__)
 
     def to_json(self):
-        """
-        :return: object, converted to json
-        :rtype: str
-        """
+        """Turns object to json"""
         return json.dumps(dict(name=self.name, link=self.link, source=self.source))
 
 
 class Offer:
-    """Offer for certain card"""
+    """Offer of certain card"""
 
     def __init__(
         self,
@@ -150,10 +123,7 @@ class Offer:
         self.seller = seller
 
     def to_json(self):
-        """
-        :return: object, converted to json
-        :rtype: str
-        """
+        """Turns object to json"""
         return json.dumps(
             dict(
                 card_name=self.card_name,
@@ -189,30 +159,12 @@ class BaseParser(ABC):
 
     @staticmethod
     def _to_soup(html_text):
-        """
-        :param html_text: HTML code of the page to parse
-        :type html_text: str
-        :return: data structure representing parsed HTML document 
-        :rtype: BeautifulSoup
-        """
         return BeautifulSoup(html_text, features="html.parser")
 
-    def _get_full_url(self, url):
-        """
-        :param url: relative link
-        :type url: str
-        :return: absolute link
-        :rtype: str
-        """
-        return urljoin(self._DOMAIN, url)
+    def _get_full_url(self, postfix):
+        return urljoin(self._DOMAIN, postfix)
 
     async def _get_page(self, query):
-        """
-        :param query: relative link for given website
-        :type search: str
-        :return: page with result of GET request
-        :rtype: BeautifulSoup
-        """
         url = self._get_full_url(query)
         print(f"GET request: {url}")
         async with self._semaphore:
@@ -224,20 +176,11 @@ class BaseParser(ABC):
         return self._to_soup(html)
 
     async def _get_offers_page(self, search):
-        """
-        :param search: card to search on given website
-        :type search: str
-        :return: search page with results
-        :rtype: BeautifulSoup
-        """
-        return await self._get_page(self._SEARCH.format(quote_plus(search)))  # pylint: disable=no-member
+        return await self._get_page(
+            self._SEARCH.format(quote_plus(search))
+        )  # pylint: disable=no-member
 
     @abstractmethod
     async def parse_card_offers(self, card, allow_empty, allow_art):
-        """
-        :param card: card name to search offers for
-        :type card: str
-        :return: offers for given card
-        :rtype: dict
-        """
+        """Extracts information from given page and transforms it"""
         raise NotImplementedError
